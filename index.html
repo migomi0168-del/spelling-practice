@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌱 틀려도 괜찮아, 초보에서 고수로!</title>
+  <style>
+    :root {
+      --bg-color: #e0f2fe;
+      --card-bg: #ffffff;
+      --primary-blue: #2563eb;
+      --primary-blue-hover: #1d4ed8;
+      --primary-green: #16a34a;
+      --primary-green-hover: #15803d;
+      --accent-orange: #ea580c;
+      --text-main: #000000;
+      --text-sub: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Pretendard', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
+    }
+
+    .app-container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 800px;
+      border-radius: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 상단 헤더 */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--bg-color);
+      padding-bottom: 16px;
+    }
+
+    .header-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    .btn-finish {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .btn-finish:hover {
+      background-color: #b91c1c;
+    }
+
+    /* 문제 화면 및 프로그레스 바 */
+    .quiz-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .progress-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-blue);
+    }
+
+    .btn-sound {
+      background-color: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 18px 32px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .btn-sound:hover:not(:disabled) {
+      background-color: var(--primary-green-hover);
+    }
+
+    .btn-sound:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .input-box {
+      width: 100%;
+      max-width: 600px;
+      font-size: 1.8rem;
+      padding: 16px;
+      border: 4px solid #93c5fd;
+      border-radius: 16px;
+      text-align: center;
+      font-weight: bold;
+      color: #000;
+      outline: none;
+    }
+
+    .input-box:focus {
+      border-color: var(--primary-blue);
+    }
+
+    .btn-submit {
+      background-color: var(--primary-blue);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      border-radius: 16px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-blue-hover);
+    }
+
+    /* 피드백 박스 */
+    .feedback-box {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .feedback-correct {
+      background-color: #dcfce7;
+      border: 3px solid #22c55e;
+      color: #14532d;
+    }
+
+    .feedback-incorrect {
+      background-color: #fef2f2;
+      border: 3px solid #ef4444;
+      color: #7f1d1d;
+    }
+
+    .feedback-title {
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      font-size: 1.3rem;
+      text-align: left;
+      margin-top: 8px;
+    }
+
+    .btn-next {
+      background-color: var(--accent-orange);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    /* 결과 및 오답노트 화면 */
+    .result-card {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .score-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .score-detail {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary-blue);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .btn-action {
+      border: none;
+      padding: 18px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .btn-review {
+      background-color: var(--accent-orange);
+      color: white;
+    }
+
+    .btn-restart {
+      background-color: var(--primary-green);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header class="header">
+      <h1 class="header-title">🌱 틀려도 괜찮아, 초보에서 고수로!</h1>
+      <button class="btn-finish" onclick="finishQuiz()">다 했어요!</button>
+    </header>
+
+    <main id="quiz-screen" class="quiz-card">
+      <div id="progress" class="progress-text">문제 1 / 9</div>
+      
+      <button id="btn-sound" class="btn-sound" onclick="playTTS()">
+        🔊 소리 듣기 (남은 횟수: <span id="sound-count">3</span>/3)
+      </button>
+
+      <input type="text" id="user-input" class="input-box" placeholder="들린 문장을 타이핑하세요" autocomplete="off" onkeypress="handleKeyPress(event)">
+
+      <button id="btn-submit" class="btn-submit" onclick="checkAnswer()">제출 / 정답 확인</button>
+
+      <div id="feedback" class="feedback-box">
+        <div id="feedback-message" class="feedback-title"></div>
+        <div id="feedback-detail"></div>
+        <button id="btn-next" class="btn-next" onclick="nextQuestion()">다음 문제로 ▶</button>
+      </div>
+    </main>
+
+    <main id="result-screen" class="result-card">
+      <div class="score-title">🎉 학습이 완료 되었습니다!</div>
+      <div id="score-text" class="score-detail"></div>
+      
+      <div class="action-buttons">
+        <button id="btn-review" class="btn-action btn-review" onclick="startReview()" style="display: none;">
+          📝 틀린 문제만 다시 풀기 (오답노트)
+        </button>
+        <button class="btn-action btn-restart" onclick="restartAll()">
+          🔄 처음부터 다시 풀기
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const originalQuestions = [
+      "낡은 앞치마에 손을 닦으며",
+      "기계식 멧돌이 부엌에",
+      "앙금을 가라앉힌 윗물",
+      "떡볶이 국물과 밥을 섞다",
+      "무인 안내기는 무용지물이다.",
+      "과일을 깎으면 좋겠다.",
+      "디지털 기기 사용에 취약한",
+      "쓰레기가 쌓여 있습니다.",
+      "신체 특성에 맞추어 만듦"
+    ];
+
+    let currentList = [...originalQuestions];
+    let currentIndex = 0;
+    let currentTTSCount = 3;
+    let wrongAnswers = [];
+    let isReviewMode = false;
+    let correctCount = 0;
+
+    function loadQuestion() {
+      if (currentIndex >= currentList.length) {
+        finishQuiz();
+        return;
+      }
+
+      const qText = isReviewMode ? "오답노트 " : "문제 ";
+      document.getElementById("progress").innerText = `${qText}${currentIndex + 1} / ${currentList.length}`;
+      
+      currentTTSCount = 3;
+      updateSoundButton();
+      
+      const inputEl = document.getElementById("user-input");
+      inputEl.value = "";
+      inputEl.disabled = false;
+      inputEl.focus();
+
+      document.getElementById("btn-submit").style.display = "inline-block";
+      document.getElementById("feedback").style.display = "none";
+
+      setTimeout(() => playTTS(), 300);
+    }
+
+    function playTTS() {
+      if (currentTTSCount <= 0) return;
+
+      window.speechSynthesis.cancel();
+      const text = currentList[currentIndex];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "ko-KR";
+      utterance.rate = 0.85;
+
+      window.speechSynthesis.speak(utterance);
+
+      currentTTSCount--;
+      updateSoundButton();
+    }
+
+    function updateSoundButton() {
+      const btn = document.getElementById("btn-sound");
+      const countSpan = document.getElementById("sound-count");
+      countSpan.innerText = currentTTSCount;
+
+      if (currentTTSCount <= 0) {
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+      }
+    }
+
+    function checkAnswer() {
+      const inputEl = document.getElementById("user-input");
+      const userText = inputEl.value.trim();
+      const targetText = currentList[currentIndex];
+
+      if (!userText) {
+        alert("문장을 입력해 주세요!");
+        return;
+      }
+
+      inputEl.disabled = true;
+      document.getElementById("btn-submit").style.display = "none";
+
+      const feedbackEl = document.getElementById("feedback");
+      const msgEl = document.getElementById("feedback-message");
+      const detailEl = document.getElementById("feedback-detail");
+
+      feedbackEl.style.display = "block";
+
+      if (userText === targetText) {
+        feedbackEl.className = "feedback-box feedback-correct";
+        msgEl.innerText = "🎉 정답입니다! 한 걸음 더 고수가 되었어요!";
+        detailEl.innerHTML = "";
+        if (!isReviewMode) correctCount++;
+      } else {
+        feedbackEl.className = "feedback-box feedback-incorrect";
+        msgEl.innerText = "😊 다시 해 볼까요? 괜찮아요!";
+        detailEl.innerHTML = `
+          <table class="comparison-table">
+            <tr><td><strong>내가 쓴 문장:</strong></td><td>${escapeHtml(userText)}</td></tr>
+            <tr><td><strong>바른 정답:</strong></td><td><mark style="background-color: #fef08a;">${targetText}</mark></td></tr>
+          </table>
+        `;
+        if (!wrongAnswers.includes(targetText)) {
+          wrongAnswers.push(targetText);
+        }
+      }
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      loadQuestion();
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        if (document.getElementById("btn-submit").style.display !== "none") {
+          checkAnswer();
+        } else {
+          nextQuestion();
+        }
+      }
+    }
+
+    function finishQuiz() {
+      window.speechSynthesis.cancel();
+      document.getElementById("quiz-screen").style.display = "none";
+      document.getElementById("result-screen").style.display = "flex";
+
+      const scoreEl = document.getElementById("score-text");
+      const total = originalQuestions.length;
+      const score = Math.round((correctCount / total) * 100);
+
+      scoreEl.innerText = `맞힌 개수: ${correctCount} / ${total}개 (${score}점)`;
+
+      const reviewBtn = document.getElementById("btn-review");
+      if (wrongAnswers.length > 0) {
+        reviewBtn.style.display = "block";
+      } else {
+        reviewBtn.style.display = "none";
+      }
+    }
+
+    function startReview() {
+      isReviewMode = true;
+      currentList = [...wrongAnswers];
+      currentIndex = 0;
+      document.getElementById("result-screen").style.display = "none";
+      document.getElementById("quiz-screen").style.display = "flex";
+      loadQuestion();
+    }
+
+    function restartAll() {
+      isReviewMode = false;
+      currentList = [...originalQuestions];
+      currentIndex = 0;
+      correctCount = 0;
+      wrongAnswers = [];
+      document.getElementById("result-screen").style.display = "none";
+      document.getElementById("quiz-screen").style.display = "flex";
+      loadQuestion();
+    }
+
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    window.onload = loadQuestion;
+  </script>
+</body>
+</html>
