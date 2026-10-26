@@ -242,6 +242,24 @@
       background-color: var(--primary-green);
       color: white;
     }
+
+    /* 연상 그림 */
+    .picture-box {
+      display: none;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .picture-box img {
+      max-height: 260px;
+      max-width: 48%;
+      border-radius: 16px;
+      border: 4px solid var(--bg-color);
+      object-fit: contain;
+      background: #fff;
+    }
   </style>
 </head>
 <body>
@@ -259,6 +277,8 @@
 
     <main id="quiz-screen" class="quiz-card" style="display: none;">
       <div id="progress" class="progress-text">문제 1 / 9</div>
+
+      <div id="picture-box" class="picture-box"></div>
       
       <button id="btn-sound" class="btn-sound" onclick="playTTS()">
         🔊 소리 듣기 (남은 횟수: <span id="sound-count">3</span>/3)
@@ -303,6 +323,21 @@
       "신체 특성에 맞추어 만듦"
     ];
 
+    // 문장별 연상 그림 (images 폴더). 그림이 없는 문장은 그림 없이 출제됨
+    const questionImages = {
+      "낡은 앞치마에 손을 닦으며": ["images/q1-1.jpg", "images/q1-2.jpg"]
+    };
+
+    function showPictures(sentence) {
+      const box = document.getElementById("picture-box");
+      const imgs = questionImages[sentence] || [];
+      box.innerHTML = imgs.map(src => `<img src="${src}" alt="연상 그림">`).join("");
+      box.style.display = imgs.length ? "flex" : "none";
+    }
+
+    // 그림 미리 불러오기
+    Object.values(questionImages).flat().forEach(src => { const i = new Image(); i.src = src; });
+
     let currentList = [...originalQuestions];
     let currentIndex = 0;
     let currentTTSCount = 3;
@@ -319,6 +354,8 @@
       const qText = isReviewMode ? "오답노트 " : "문제 ";
       document.getElementById("progress").innerText = `${qText}${currentIndex + 1} / ${currentList.length}`;
       
+      showPictures(currentList[currentIndex]);
+
       currentTTSCount = 3;
       updateSoundButton();
       
