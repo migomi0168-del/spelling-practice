@@ -351,7 +351,6 @@
     let currentTTSCount = 3;
     let wrongAnswers = [];
     let isReviewMode = false;
-    let correctCount = 0;
 
     function loadQuestion() {
       if (currentIndex >= currentList.length) {
@@ -437,7 +436,6 @@
         feedbackEl.className = "feedback-box feedback-correct";
         msgEl.innerText = "🎉 정답입니다! 한 걸음 더 고수가 되었어요!";
         detailEl.innerHTML = "";
-        if (!isReviewMode) correctCount++;
       } else {
         feedbackEl.className = "feedback-box feedback-incorrect";
         msgEl.innerText = "😊 다시 해 볼까요? 괜찮아요!";
@@ -474,11 +472,10 @@
       document.getElementById("quiz-screen").style.display = "none";
       document.getElementById("result-screen").style.display = "flex";
 
-      const scoreEl = document.getElementById("score-text");
-      const total = originalQuestions.length;
-      const score = Math.round((correctCount / total) * 100);
-
-      scoreEl.innerText = `맞힌 개수: ${correctCount} / ${total}개 (${score}점)`;
+      const msgEl = document.getElementById("score-text");
+      msgEl.innerText = wrongAnswers.length > 0
+        ? "📝 틀린 문장은 오답노트에서 한 번 더 연습해 봐요!"
+        : "💪 오늘도 열심히 연습했어요!";
 
       const reviewBtn = document.getElementById("btn-review");
       if (wrongAnswers.length > 0) {
@@ -501,7 +498,6 @@
       isReviewMode = false;
       currentList = [...originalQuestions];
       currentIndex = 0;
-      correctCount = 0;
       wrongAnswers = [];
       document.getElementById("result-screen").style.display = "none";
       document.getElementById("quiz-screen").style.display = "flex";
