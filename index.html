@@ -252,14 +252,19 @@
       <button class="btn-finish" onclick="finishQuiz()">다 했어요!</button>
     </header>
 
-    <main id="quiz-screen" class="quiz-card">
+    <main id="start-screen" class="quiz-card">
+      <div class="progress-text">🎧 소리를 잘 듣고 문장을 받아 써 봐요!</div>
+      <button class="btn-sound" onclick="startQuiz()">▶ 받아쓰기 시작하기</button>
+    </main>
+
+    <main id="quiz-screen" class="quiz-card" style="display: none;">
       <div id="progress" class="progress-text">문제 1 / 9</div>
       
       <button id="btn-sound" class="btn-sound" onclick="playTTS()">
         🔊 소리 듣기 (남은 횟수: <span id="sound-count">3</span>/3)
       </button>
 
-      <input type="text" id="user-input" class="input-box" placeholder="들린 문장을 타이핑하세요" autocomplete="off" onkeypress="handleKeyPress(event)">
+      <input type="text" id="user-input" class="input-box" placeholder="들린 문장을 타이핑하세요" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onkeypress="handleKeyPress(event)">
 
       <button id="btn-submit" class="btn-submit" onclick="checkAnswer()">제출 / 정답 확인</button>
 
@@ -337,10 +342,19 @@
       utterance.lang = "ko-KR";
       utterance.rate = 0.85;
 
-      window.speechSynthesis.speak(utterance);
+      // 실제로 소리가 나기 시작했을 때만 횟수 차감 (자동재생이 막히면 차감 안 됨)
+      utterance.onstart = () => {
+        if (currentTTSCount > 0) currentTTSCount--;
+        updateSoundButton();
+      };
 
-      currentTTSCount--;
-      updateSoundButton();
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function startQuiz() {
+      document.getElementById("start-screen").style.display = "none";
+      document.getElementById("quiz-screen").style.display = "flex";
+      loadQuestion();
     }
 
     function updateSoundButton() {
@@ -411,6 +425,7 @@
 
     function finishQuiz() {
       window.speechSynthesis.cancel();
+      document.getElementById("start-screen").style.display = "none";
       document.getElementById("quiz-screen").style.display = "none";
       document.getElementById("result-screen").style.display = "flex";
 
@@ -452,7 +467,6 @@
       return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    window.onload = loadQuestion;
   </script>
 </body>
 </html>
