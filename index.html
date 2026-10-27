@@ -432,7 +432,9 @@
 
       feedbackEl.style.display = "block";
 
-      if (userText === targetText) {
+      // 마침표(.)는 채점에서 빼기: 넣어도, 안 넣어도 정답
+      const noDot = (str) => str.replace(/\./g, "").trim();
+      if (noDot(userText) === noDot(targetText)) {
         feedbackEl.className = "feedback-box feedback-correct";
         msgEl.innerText = "🎉 정답입니다! 한 걸음 더 고수가 되었어요!";
         detailEl.innerHTML = "";
