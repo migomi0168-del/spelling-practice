@@ -276,7 +276,7 @@
     </main>
 
     <main id="quiz-screen" class="quiz-card" style="display: none;">
-      <div id="progress" class="progress-text">문제 1 / 9</div>
+      <div id="progress" class="progress-text">문제 1 / 7</div>
 
       <div id="picture-box" class="picture-box"></div>
       
@@ -346,7 +346,19 @@
     // 그림 미리 불러오기
     Object.values(questionImages).flat().forEach(src => { const i = new Image(); i.src = src; });
 
-    let currentList = [...originalQuestions];
+    // 한 번에 낼 문제 수 (전체 문장 중에서 랜덤으로 뽑음)
+    const QUESTION_COUNT = 7;
+
+    function pickRandomQuestions() {
+      const list = [...originalQuestions];
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+      }
+      return list.slice(0, QUESTION_COUNT);
+    }
+
+    let currentList = pickRandomQuestions();
     let currentIndex = 0;
     let currentTTSCount = 3;
     let wrongAnswers = [];
@@ -497,7 +509,7 @@
 
     function restartAll() {
       isReviewMode = false;
-      currentList = [...originalQuestions];
+      currentList = pickRandomQuestions();
       currentIndex = 0;
       wrongAnswers = [];
       document.getElementById("result-screen").style.display = "none";
