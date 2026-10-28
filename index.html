@@ -395,7 +395,9 @@
       const text = currentList[currentIndex];
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "ko-KR";
-      utterance.rate = 0.85;
+      // 들을수록 천천히: 1번째 0.8배, 2번째 0.7배, 3번째 0.5배
+      const rates = [0.8, 0.7, 0.5];
+      utterance.rate = rates[3 - currentTTSCount] || 0.5;
 
       // 실제로 소리가 나기 시작했을 때만 횟수 차감 (자동재생이 막히면 차감 안 됨)
       utterance.onstart = () => {
